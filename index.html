@@ -118,6 +118,34 @@ h1 span{color:var(--sage)}
 .tag{font-size:10px;font-family:var(--f-mono);border:1px solid var(--line);color:var(--muted);border-radius:3px;padding:0 4px}
 .clash{font-size:11px;color:var(--bad);font-weight:600}
 
+/* Alertas de chegada */
+.alertbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;border-radius:8px;padding:10px 14px;border:1px solid var(--line);background:var(--panel)}
+.alertbar.soon{border-color:var(--accent);background:var(--warn-bg)}
+.alertbar.late{border-color:var(--bad);background:var(--bad-bg)}
+.alertbar .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);flex:none}
+.alertbar.soon .dot{background:var(--accent)}
+.alertbar.late .dot{background:var(--bad)}
+.alertbar .msg{font-weight:600;min-width:0;flex:1 1 240px}
+.alertbar .msg small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.alertbar label{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.alertbar select{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 8px}
+.alertbar .btn{padding:5px 10px;font-size:12.5px}
+.eta{font-family:var(--f-mono);font-size:11.5px;font-weight:500;border-radius:4px;padding:2px 6px;align-self:flex-start}
+.eta.soon{background:var(--warn-bg);color:var(--warn)}
+.eta.late{background:var(--bad-bg);color:var(--bad)}
+.card.urg-soon{border:2px solid var(--accent)}
+.card.urg-late{border:2px solid var(--bad)}
+tr.urg-soon td:first-child{box-shadow:inset 4px 0 0 var(--accent)}
+tr.urg-late td:first-child{box-shadow:inset 4px 0 0 var(--bad)}
+@media (prefers-reduced-motion:no-preference){
+  .card.urg-soon,.alertbar.soon .dot{animation:blinkSoon 1.4s ease-in-out infinite}
+  .card.urg-late,.alertbar.late .dot{animation:blinkLate .9s ease-in-out infinite}
+  .eta.soon,.eta.late{animation:fade 1.4s ease-in-out infinite}
+  @keyframes blinkSoon{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 4px var(--accent)}}
+  @keyframes blinkLate{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 5px var(--bad)}}
+  @keyframes fade{50%{opacity:.45}}
+}
+
 /* Tabela */
 .tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;min-width:980px;font-size:13px}
@@ -205,6 +233,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     </div>
   </section>
 
+  <div class="alertbar" id="alertBar" role="status" aria-live="polite"></div>
   <div class="notice" id="notice" hidden></div>
 
   <section class="totals" id="totals" aria-label="Totais da semana"></section>
@@ -310,6 +339,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   }
 
   function render(){
+    renderAlerts();
     const list=filtered(), clash=clashes(list);
     const end=addDays(weekStart,5);
     $("#weekLabel").innerHTML=`${weekStart.getDate()} ${MESES[weekStart.getMonth()]} – ${end.getDate()} ${MESES[end.getMonth()]} ${end.getFullYear()}<small>Semana ${isoWeek(weekStart)}</small>`;
@@ -349,7 +379,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
         const d=addDays(weekStart,i),di=iso(d),its=list.filter(x=>x.data===di);
         if(!its.length)return;
         rows+=`<tr class="dayrow"><td colspan="10">${nm} ${pad(d.getDate())}/${pad(d.getMonth()+1)}</td></tr>`;
-        its.forEach(x=>{rows+=`<tr class="row" data-id="${esc(x.id)}"><td>${esc(x.hora)}</td><td>${esc(x.doca||"—")}</td><td><b>${esc(x.empresa)}</b>${x.exemplo?' <span class="tag">exemplo</span>':""}${x.transportadora?`<div class="meta">${esc(x.transportadora)}</div>`:""}</td><td>${esc(x.produto)}</td><td class="num">${x.qtd?fmtN(x.qtd):"—"}</td><td>${esc(x.un||"")}</td><td class="num">${palletsOf(x)?fmtN(palletsOf(x)):"—"}</td><td>${esc(x.veiculo||"")}${x.placa?`<div class="meta">${esc(x.placa)}</div>`:""}</td><td>${esc(x.nf||"")}</td><td><span class="pill st-${esc(x.status)}">${esc(x.status)}</span></td></tr>`});
+        its.forEach(x=>{rows+=`<tr class="row${urgency(x)?" urg-"+urgency(x).k:""}" data-id="${esc(x.id)}"><td>${esc(x.hora)}</td><td>${esc(x.doca||"—")}</td><td><b>${esc(x.empresa)}</b>${x.exemplo?' <span class="tag">exemplo</span>':""}${x.transportadora?`<div class="meta">${esc(x.transportadora)}</div>`:""}</td><td>${esc(x.produto)}</td><td class="num">${x.qtd?fmtN(x.qtd):"—"}</td><td>${esc(x.un||"")}</td><td class="num">${palletsOf(x)?fmtN(palletsOf(x)):"—"}</td><td>${esc(x.veiculo||"")}${x.placa?`<div class="meta">${esc(x.placa)}</div>`:""}</td><td>${esc(x.nf||"")}</td><td><span class="pill st-${esc(x.status)}">${esc(x.status)}</span></td></tr>`});
       });
       $("#tableView").innerHTML=`<table><thead><tr><th>Hora</th><th>Doca</th><th>Empresa</th><th>Produto</th><th style="text-align:right">Qtd</th><th>Un</th><th style="text-align:right">Pallets</th><th>Veículo</th><th>NF</th><th>Status</th></tr></thead><tbody>${rows||`<tr><td colspan="10" class="empty">Nenhum agendamento nesta semana.</td></tr>`}</tbody></table>`;
     }
@@ -437,6 +467,36 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     setTimeout(()=>URL.revokeObjectURL(url),2000);toast("Planilha baixada")
   }
 
+  let alertH=2;
+  try{const h=Number(localStorage.getItem("agenda-alerta-h"));if([1,2,3,4,6].includes(h))alertH=h}catch(e){}
+  function fmtMin(m){m=Math.round(Math.abs(m));const h=Math.floor(m/60),r=m%60;return h?`${h}h${r?pad(r):""}`:`${r} min`}
+  // Só cargas ainda "Agendado" contam: se já chegou, não há o que avisar
+  function urgency(x){
+    if(x.status!=="Agendado"||!x.data||!x.hora)return null;
+    const [y,mo,d]=x.data.split("-").map(Number),[hh,mm]=x.hora.split(":").map(Number);
+    const diff=(new Date(y,mo-1,d,hh,mm)-new Date())/60000;
+    if(diff<-15)return {k:"late",min:diff,txt:"Atrasado "+fmtMin(diff)};
+    if(diff<=alertH*60)return {k:"soon",min:diff,txt:diff<=0?"Chegando agora":"Chega em "+fmtMin(diff)};
+    return null;
+  }
+  function renderAlerts(){
+    const today=iso(new Date());
+    const urg=items.filter(x=>x.data>=iso(addDays(new Date(),-1))&&x.data<=today||x.data===iso(addDays(new Date(),1))).map(x=>({x,u:urgency(x)})).filter(o=>o.u).sort((a,b)=>a.u.min-b.u.min);
+    const late=urg.filter(o=>o.u.k==="late"),soon=urg.filter(o=>o.u.k==="soon");
+    const bar=$("#alertBar");
+    bar.className="alertbar"+(late.length?" late":soon.length?" soon":"");
+    const opts=[1,2,3,4,6].map(h=>`<option value="${h}"${h===alertH?" selected":""}>${h}h antes</option>`).join("");
+    let msg;
+    if(!urg.length) msg=`Nenhuma descarga nas próximas ${alertH}h<small>Cargas agendadas passam a piscar aqui e no quadro quando faltar ${alertH}h ou menos.</small>`;
+    else{
+      const parts=[];if(late.length)parts.push(`${late.length} atrasada${late.length>1?"s":""}`);if(soon.length)parts.push(`${soon.length} nas próximas ${alertH}h`);
+      msg=parts.join(" · ")+`<small>${urg.slice(0,4).map(o=>`${o.x.hora}${o.x.doca?" "+esc(o.x.doca):""} ${esc(o.x.empresa)} — ${o.u.txt}`).join(" · ")}${urg.length>4?` · +${urg.length-4}`:""}</small>`;
+    }
+    bar.innerHTML=`<span class="dot" aria-hidden="true"></span><span class="msg">${msg}</span><label for="alertSel">Avisar</label><select id="alertSel">${opts}</select>${urg.length&&iso(weekStart)!==iso(mondayOf(new Date()))?'<button class="btn" type="button" id="goToday">Ver hoje</button>':""}`;
+    const n=late.length+soon.length;
+    document.title=(n?`(${n}) `:"")+"Agenda de Recebimento MOAS";
+  }
+
   function card(x,isClash){
     const qty=[];
     if(x.qtd) qty.push(`<span><b>${fmtN(x.qtd)}</b> ${esc(x.un||"UN")}</span>`);
@@ -444,7 +504,9 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     else if(x.palTipo) qty.push(`<span>${esc(x.palTipo)}</span>`);
     const meta=[x.veiculo,x.placa,x.nf].filter(Boolean).map(esc).join(" · ");
     const done=["Concluído","Cancelado","No-show"].includes(x.status);
-    return `<button type="button" class="card${done?" done":""}" data-id="${esc(x.id)}">
+    const u=urgency(x);
+    return `<button type="button" class="card${done?" done":""}${u?" urg-"+u.k:""}" data-id="${esc(x.id)}">
+      ${u?`<span class="eta ${u.k}">⏱ ${u.txt}</span>`:""}
       <span class="top"><span class="time">${esc(x.hora)}</span>${x.doca?`<span class="dock">${esc(x.doca)}</span>`:""}${x.exemplo?'<span class="tag">exemplo</span>':""}<span class="pill st-${esc(x.status)}">${esc(x.status)}</span></span>
       <span class="company">${esc(x.empresa)}</span>
       <span class="product">${esc(x.produto)}</span>
@@ -517,6 +579,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     const c=e.target.closest("[data-id]");
     if(c&&!e.target.closest("#drawer")){const it=items.find(i=>i.id===c.dataset.id);if(it)openForm(it);return}
     const a=e.target.closest("[data-add]");if(a){openForm(null,a.dataset.add);return}
+    if(e.target.id==="goToday"){weekStart=mondayOf(new Date());render();return}
     if(e.target.id==="copyTxt"){copySummary(e.target);return}
     if(e.target.id==="dlXlsx"){downloadXlsx();return}
     if(e.target.id==="clearEx"){e.target.outerHTML='<span class="confirm">Apagar todos os exemplos? <button class="btn danger" type="button" id="clearExYes">Apagar</button><button class="btn" type="button" id="clearExNo">Manter</button></span>';return}
@@ -538,6 +601,10 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   $("#vBoard").onclick=()=>setView("board");$("#vTable").onclick=()=>setView("table");$("#vReport").onclick=()=>setView("report");
   try{const v=localStorage.getItem("agenda-view");if(["board","table","report"].includes(v))view=v}catch(e){}
   ["board","table","report"].forEach(k=>$({board:"#vBoard",table:"#vTable",report:"#vReport"}[k]).setAttribute("aria-pressed",k===view));
+
+  document.addEventListener("change",e=>{if(e.target.id==="alertSel"){alertH=Number(e.target.value);try{localStorage.setItem("agenda-alerta-h",alertH)}catch(_){}render()}});
+  // Reavalia os prazos a cada minuto (não mexe no formulário aberto)
+  setInterval(()=>{if(!document.hidden)render()},60000);
 
   // Primeiro quadro: vazio até o armazenamento responder
   render();
