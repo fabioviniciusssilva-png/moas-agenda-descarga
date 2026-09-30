@@ -118,6 +118,17 @@ h1 span{color:var(--sage)}
 .tag{font-size:10px;font-family:var(--f-mono);border:1px solid var(--line);color:var(--muted);border-radius:3px;padding:0 4px}
 .clash{font-size:11px;color:var(--bad);font-weight:600}
 
+/* Marcas */
+.brandtabs{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.brandtabs button{border:0;background:var(--panel-2);padding:7px 14px;font-size:13px;font-weight:500;display:inline-flex;gap:6px;align-items:center}
+.brandtabs button b{font-family:var(--f-mono);font-size:11px;font-weight:500;color:var(--muted)}
+.brandtabs button[aria-pressed="true"]{background:var(--brand);color:var(--panel);font-weight:600}
+.brandtabs button[aria-pressed="true"] b{color:inherit;opacity:.8}
+.mk{font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:0 6px;line-height:1.5}
+.mk-Mart{background:var(--brand);color:var(--panel)}
+.mk-Buba{background:transparent;color:var(--brand);box-shadow:inset 0 0 0 1.5px var(--brand)}
+.mk-none{color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+
 /* Alertas de chegada */
 .alertbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;border-radius:8px;padding:10px 14px;border:1px solid var(--line);background:var(--panel)}
 .alertbar.soon{border-color:var(--accent);background:var(--warn-bg)}
@@ -225,6 +236,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
       <button class="iconbtn" id="nextW" type="button" aria-label="Próxima semana">›</button>
     </div>
     <div class="weeklabel" id="weekLabel">—</div>
+    <div class="brandtabs" role="group" aria-label="Marca" id="brandTabs"></div>
     <div class="filter"><input id="q" type="search" placeholder="Filtrar empresa, produto, NF…" aria-label="Filtrar"></div>
     <div class="seg" role="group" aria-label="Visualização">
       <button type="button" id="vBoard" aria-pressed="true">Quadro</button>
@@ -260,6 +272,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     </fieldset>
     <fieldset>
       <legend>Quem descarrega</legend>
+      <div class="f full"><label for="fMarca">Marca <i>*</i></label><select id="fMarca" required><option value="">Selecione…</option><option>Mart</option><option>Buba</option></select></div>
       <div class="f full"><label for="fEmpresa">Empresa / fornecedor <i>*</i></label><input id="fEmpresa" type="text" required autocomplete="off" list="empresasList"></div>
       <datalist id="empresasList"></datalist>
       <div class="f"><label for="fTransp">Transportadora</label><input id="fTransp" type="text" autocomplete="off"></div>
@@ -314,12 +327,12 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   function sampleWeek(){
     const m=mondayOf(new Date()),d=i=>iso(addDays(m,i));
     return [
-      {id:"s1",data:d(0),hora:"07:30",doca:"D1",empresa:"Fornecedor Exemplo A",transportadora:"Transp. Exemplo",placa:"ABC1D23",veiculo:"Container 40'",produto:"Revestimento cerâmico 60x60",qtd:1840,un:"CX",pallets:24,palTipo:"PBR",nf:"NF 10234",status:"Concluído",exemplo:true},
-      {id:"s2",data:d(0),hora:"10:00",doca:"D2",empresa:"Fornecedor Exemplo B",transportadora:"",placa:"",veiculo:"Truck",produto:"Argamassa AC-II 20kg",qtd:600,un:"UN",pallets:10,palTipo:"Descartável",nf:"",status:"Concluído",exemplo:true},
-      {id:"s3",data:d(2),hora:"08:00",doca:"D1",empresa:"Fornecedor Exemplo C",transportadora:"Transp. Exemplo",placa:"",veiculo:"Carreta",produto:"Porcelanato 90x90",qtd:22,un:"UN",pallets:22,palTipo:"PBR",nf:"",status:"Descarregando",exemplo:true},
-      {id:"s4",data:d(2),hora:"14:00",doca:"D3",empresa:"Fornecedor Exemplo A",transportadora:"",placa:"",veiculo:"Container 20'",produto:"Rejunte flexível 1kg",qtd:3200,un:"UN",pallets:0,palTipo:"Batida (sem pallet)",nf:"",status:"Agendado",obs:"Carga batida, precisa paletizar",exemplo:true},
-      {id:"s5",data:d(3),hora:"09:00",doca:"D2",empresa:"Fornecedor Exemplo D",transportadora:"",placa:"",veiculo:"Carreta",produto:"Metais sanitários",qtd:450,un:"CX",pallets:14,palTipo:"Fumigado",nf:"",status:"Agendado",exemplo:true},
-      {id:"s6",data:d(4),hora:"13:30",doca:"",empresa:"Fornecedor Exemplo B",transportadora:"",placa:"",veiculo:"Toco",produto:"Argamassa AC-III 20kg",qtd:400,un:"UN",pallets:8,palTipo:"PBR",nf:"",status:"Agendado",exemplo:true}
+      {id:"s1",marca:"Mart",data:d(0),hora:"07:30",doca:"D1",empresa:"Fornecedor Exemplo A",transportadora:"Transp. Exemplo",placa:"ABC1D23",veiculo:"Container 40'",produto:"Revestimento cerâmico 60x60",qtd:1840,un:"CX",pallets:24,palTipo:"PBR",nf:"NF 10234",status:"Concluído",exemplo:true},
+      {id:"s2",marca:"Buba",data:d(0),hora:"10:00",doca:"D2",empresa:"Fornecedor Exemplo B",transportadora:"",placa:"",veiculo:"Truck",produto:"Argamassa AC-II 20kg",qtd:600,un:"UN",pallets:10,palTipo:"Descartável",nf:"",status:"Concluído",exemplo:true},
+      {id:"s3",marca:"Mart",data:d(2),hora:"08:00",doca:"D1",empresa:"Fornecedor Exemplo C",transportadora:"Transp. Exemplo",placa:"",veiculo:"Carreta",produto:"Porcelanato 90x90",qtd:22,un:"UN",pallets:22,palTipo:"PBR",nf:"",status:"Descarregando",exemplo:true},
+      {id:"s4",marca:"Buba",data:d(2),hora:"14:00",doca:"D3",empresa:"Fornecedor Exemplo A",transportadora:"",placa:"",veiculo:"Container 20'",produto:"Rejunte flexível 1kg",qtd:3200,un:"UN",pallets:0,palTipo:"Batida (sem pallet)",nf:"",status:"Agendado",obs:"Carga batida, precisa paletizar",exemplo:true},
+      {id:"s5",marca:"Mart",data:d(3),hora:"09:00",doca:"D2",empresa:"Fornecedor Exemplo D",transportadora:"",placa:"",veiculo:"Carreta",produto:"Metais sanitários",qtd:450,un:"CX",pallets:14,palTipo:"Fumigado",nf:"",status:"Agendado",exemplo:true},
+      {id:"s6",marca:"Buba",data:d(4),hora:"13:30",doca:"",empresa:"Fornecedor Exemplo B",transportadora:"",placa:"",veiculo:"Toco",produto:"Argamassa AC-III 20kg",qtd:400,un:"UN",pallets:8,palTipo:"PBR",nf:"",status:"Agendado",exemplo:true}
     ];
   }
 
@@ -328,7 +341,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   function filtered(){
     const start=iso(weekStart),end=iso(addDays(weekStart,6));
     const qq=q.trim().toLowerCase();
-    return items.filter(it=>it.data>=start&&it.data<end).filter(it=>!qq||[it.empresa,it.produto,it.nf,it.transportadora,it.placa,it.doca].join(" ").toLowerCase().includes(qq))
+    return items.filter(it=>it.data>=start&&it.data<end).filter(it=>marcaF==="Todas"||it.marca===marcaF).filter(it=>!qq||[it.empresa,it.produto,it.nf,it.transportadora,it.placa,it.doca].join(" ").toLowerCase().includes(qq))
       .sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
   }
 
@@ -340,6 +353,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
 
   function render(){
     renderAlerts();
+    renderBrandTabs();
     const list=filtered(), clash=clashes(list);
     const end=addDays(weekStart,5);
     $("#weekLabel").innerHTML=`${weekStart.getDate()} ${MESES[weekStart.getMonth()]} – ${end.getDate()} ${MESES[end.getMonth()]} ${end.getFullYear()}<small>Semana ${isoWeek(weekStart)}</small>`;
@@ -379,7 +393,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
         const d=addDays(weekStart,i),di=iso(d),its=list.filter(x=>x.data===di);
         if(!its.length)return;
         rows+=`<tr class="dayrow"><td colspan="10">${nm} ${pad(d.getDate())}/${pad(d.getMonth()+1)}</td></tr>`;
-        its.forEach(x=>{rows+=`<tr class="row${urgency(x)?" urg-"+urgency(x).k:""}" data-id="${esc(x.id)}"><td>${esc(x.hora)}</td><td>${esc(x.doca||"—")}</td><td><b>${esc(x.empresa)}</b>${x.exemplo?' <span class="tag">exemplo</span>':""}${x.transportadora?`<div class="meta">${esc(x.transportadora)}</div>`:""}</td><td>${esc(x.produto)}</td><td class="num">${x.qtd?fmtN(x.qtd):"—"}</td><td>${esc(x.un||"")}</td><td class="num">${palletsOf(x)?fmtN(palletsOf(x)):"—"}</td><td>${esc(x.veiculo||"")}${x.placa?`<div class="meta">${esc(x.placa)}</div>`:""}</td><td>${esc(x.nf||"")}</td><td><span class="pill st-${esc(x.status)}">${esc(x.status)}</span></td></tr>`});
+        its.forEach(x=>{rows+=`<tr class="row${urgency(x)?" urg-"+urgency(x).k:""}" data-id="${esc(x.id)}"><td>${esc(x.hora)}</td><td>${esc(x.doca||"—")}</td><td>${mk(x)} <b>${esc(x.empresa)}</b>${x.exemplo?' <span class="tag">exemplo</span>':""}${x.transportadora?`<div class="meta">${esc(x.transportadora)}</div>`:""}</td><td>${esc(x.produto)}</td><td class="num">${x.qtd?fmtN(x.qtd):"—"}</td><td>${esc(x.un||"")}</td><td class="num">${palletsOf(x)?fmtN(palletsOf(x)):"—"}</td><td>${esc(x.veiculo||"")}${x.placa?`<div class="meta">${esc(x.placa)}</div>`:""}</td><td>${esc(x.nf||"")}</td><td><span class="pill st-${esc(x.status)}">${esc(x.status)}</span></td></tr>`});
       });
       $("#tableView").innerHTML=`<table><thead><tr><th>Hora</th><th>Doca</th><th>Empresa</th><th>Produto</th><th style="text-align:right">Qtd</th><th>Un</th><th style="text-align:right">Pallets</th><th>Veículo</th><th>NF</th><th>Status</th></tr></thead><tbody>${rows||`<tr><td colspan="10" class="empty">Nenhum agendamento nesta semana.</td></tr>`}</tbody></table>`;
     }
@@ -405,7 +419,8 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     const empresas=Object.values(emp).sort((a,b)=>b.pallets-a.pallets||b.cargas-a.cargas);
     const sts=["Agendado","Chegou","Descarregando","Concluído","No-show","Cancelado"].map(st=>({st,n:list.filter(x=>x.status===st).length}));
     const pt={};act.forEach(x=>{if(!palletsOf(x))return;const k=x.palTipo||"Não informado";pt[k]=(pt[k]||0)+palletsOf(x)});
-    return {act,dias,empresas,sts,pt};
+    const marcas=["Mart","Buba","sem marca"].map(m=>{const a=act.filter(x=>(x.marca||"sem marca")===m);return {marca:m,cargas:a.length,pallets:sumBy(a,palletsOf),un:sumBy(a.filter(x=>x.un==="UN"),x=>x.qtd),cx:sumBy(a.filter(x=>x.un==="CX"),x=>x.qtd)}}).filter(m=>m.marca!=="sem marca"||m.cargas);
+    return {act,dias,empresas,sts,pt,marcas};
   }
   function renderReport(list,clash){
     const R=reportData(list),maxP=Math.max(1,...R.dias.map(d=>d.pallets));
@@ -418,12 +433,14 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     list.filter(x=>x.obs).forEach(x=>occ.push(["Obs.",`${fmtD(x.data)} ${x.hora} · ${x.empresa}: ${x.obs}`]));
     const stCls={"Conflito":"No-show","Sem doca":"Chegou","Obs.":"Agendado"};
     $("#reportView").innerHTML=`
-      <div class="rbar"><div><h2>Relatório de recebimento</h2><div class="sub">Semana ${isoWeek(weekStart)} · ${weekText()}${q?` · filtro: “${esc(q)}”`:""}</div></div>
+      <div class="rbar"><div><h2>Relatório de recebimento${marcaF!=="Todas"?" · "+marcaF:""}</h2><div class="sub">Semana ${isoWeek(weekStart)} · ${weekText()}${q?` · filtro: “${esc(q)}”`:""}</div></div>
         <div class="acts"><button class="btn" type="button" id="copyTxt">Copiar resumo</button>${canXlsx?'<button class="btn primary" type="button" id="dlXlsx">Baixar Excel</button>':""}</div></div>
       <div class="rgrid">
         <div class="rcard full"><h3>Por dia</h3><div class="tw"><table><thead><tr><th>Dia</th><th style="text-align:right">Cargas</th><th style="text-align:right">Pallets</th><th></th><th style="text-align:right">UN</th><th style="text-align:right">CX</th><th style="text-align:right">Concluídas</th><th style="text-align:right">Pendentes</th></tr></thead>
           <tbody>${R.dias.map(d=>`<tr><td><b>${d.nome}</b> <span class="meta">${d.data}</span></td><td class="num">${d.cargas}</td><td class="num">${fmtN(d.pallets)}</td><td style="width:22%"><div class="bar"><i style="width:${Math.round(d.pallets/maxP*100)}%"></i></div></td><td class="num">${fmtN(d.un)}</td><td class="num">${fmtN(d.cx)}</td><td class="num">${d.concl}</td><td class="num">${d.pend}</td></tr>`).join("")}</tbody>
           <tfoot><tr><td>Total</td><td class="num">${tot.cargas}</td><td class="num">${fmtN(tot.pallets)}</td><td></td><td class="num">${fmtN(tot.un)}</td><td class="num">${fmtN(tot.cx)}</td><td class="num">${tot.concl}</td><td class="num">${tot.pend}</td></tr></tfoot></table></div></div>
+        <div class="rcard full"><h3>Por marca</h3><div class="tw"><table><thead><tr><th>Marca</th><th style="text-align:right">Cargas</th><th style="text-align:right">Pallets</th><th style="text-align:right">UN</th><th style="text-align:right">CX</th></tr></thead>
+          <tbody>${R.marcas.map(m=>`<tr><td>${m.marca==="sem marca"?'<span class="mk mk-none">sem marca</span>':`<span class="mk mk-${m.marca}">${m.marca}</span>`}</td><td class="num">${m.cargas}</td><td class="num">${fmtN(m.pallets)}</td><td class="num">${fmtN(m.un)}</td><td class="num">${fmtN(m.cx)}</td></tr>`).join("")}</tbody></table></div></div>
         <div class="rcard"><h3>Por empresa</h3><div class="tw"><table><thead><tr><th>Empresa</th><th style="text-align:right">Cargas</th><th style="text-align:right">Pallets</th><th style="text-align:right">UN</th><th style="text-align:right">CX</th></tr></thead>
           <tbody>${R.empresas.length?R.empresas.map(e=>`<tr><td>${esc(e.empresa)}</td><td class="num">${e.cargas}</td><td class="num">${fmtN(e.pallets)}</td><td class="num">${fmtN(e.un)}</td><td class="num">${fmtN(e.cx)}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">Sem cargas na semana.</td></tr>`}</tbody></table></div></div>
         <div class="rcard"><h3>Status e pallets</h3><div class="tw"><table><tbody>
@@ -437,9 +454,9 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   function summaryText(){
     const list=filtered(),R=reportData(list);
     const t=R.dias.reduce((a,d)=>({c:a.c+d.cargas,p:a.p+d.pallets,u:a.u+d.un,x:a.x+d.cx}),{c:0,p:0,u:0,x:0});
-    let s=`*GRUPO MOAS · Agenda de Descarga*\nSemana ${isoWeek(weekStart)} (${weekText()})\n\nTotal: ${t.c} cargas · ${fmtN(t.p)} pallets · ${fmtN(t.u)} UN · ${fmtN(t.x)} CX\n`;
+    let s=`*GRUPO MOAS · Agenda de Descarga${marcaF!=="Todas"?" · "+marcaF:""}*\nSemana ${isoWeek(weekStart)} (${weekText()})\n\nTotal: ${t.c} cargas · ${fmtN(t.p)} pallets · ${fmtN(t.u)} UN · ${fmtN(t.x)} CX\n`;
     DIAS.forEach((nm,i)=>{const di=iso(addDays(weekStart,i)),its=list.filter(x=>x.data===di);if(!its.length)return;
-      s+=`\n*${nm} ${fmtD(di)}*\n`;its.forEach(x=>{s+=`${x.hora}${x.doca?" "+x.doca:""} · ${x.empresa} · ${x.produto}${x.qtd?" · "+fmtN(x.qtd)+" "+(x.un||"UN"):""}${palletsOf(x)?" · "+palletsOf(x)+" PLT":""} [${x.status}]\n`})});
+      s+=`\n*${nm} ${fmtD(di)}*\n`;its.forEach(x=>{s+=`${x.hora}${x.doca?" "+x.doca:""} · ${x.marca?"["+x.marca+"] ":""}${x.empresa} · ${x.produto}${x.qtd?" · "+fmtN(x.qtd)+" "+(x.un||"UN"):""}${palletsOf(x)?" · "+palletsOf(x)+" PLT":""} [${x.status}]\n`})});
     return s;
   }
   async function copySummary(btn){
@@ -454,19 +471,29 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     const a1=X.utils.aoa_to_sheet(head.concat([["Dia","Data","Cargas","Pallets","UN","CX","Concluídas","Pendentes"]],R.dias.map(d=>[d.nome,d.data,d.cargas,d.pallets,d.un,d.cx,d.concl,d.pend])));
     a1["!cols"]=[{wch:8},{wch:8},{wch:8},{wch:9},{wch:9},{wch:9},{wch:11},{wch:10}];
     X.utils.book_append_sheet(wb,a1,"Resumo por dia");
-    const a2=X.utils.aoa_to_sheet([["Data","Dia","Hora","Doca","Empresa","Transportadora","Produto","Quantidade","Unidade","Pallets","Tipo pallet","Veículo","Placa","NF/Pedido","Status","Observações"]].concat(list.map(x=>{const dt=new Date(x.data+"T12:00:00");return [fmtD(x.data),DIAS[(dt.getDay()+6)%7]||"Dom",x.hora,x.doca||"",x.empresa,x.transportadora||"",x.produto,Number(x.qtd)||0,x.un||"UN",palletsOf(x),x.palTipo||"",x.veiculo||"",x.placa||"",x.nf||"",x.status,x.obs||""]})));
-    a2["!cols"]=[8,6,6,6,26,20,28,11,8,8,14,13,10,12,13,34].map(w=>({wch:w}));
+    const a2=X.utils.aoa_to_sheet([["Marca","Data","Dia","Hora","Doca","Empresa","Transportadora","Produto","Quantidade","Unidade","Pallets","Tipo pallet","Veículo","Placa","NF/Pedido","Status","Observações"]].concat(list.map(x=>{const dt=new Date(x.data+"T12:00:00");return [x.marca||"",fmtD(x.data),DIAS[(dt.getDay()+6)%7]||"Dom",x.hora,x.doca||"",x.empresa,x.transportadora||"",x.produto,Number(x.qtd)||0,x.un||"UN",palletsOf(x),x.palTipo||"",x.veiculo||"",x.placa||"",x.nf||"",x.status,x.obs||""]})));
+    a2["!cols"]=[8,8,6,6,6,26,20,28,11,8,8,14,13,10,12,13,34].map(w=>({wch:w}));
     X.utils.book_append_sheet(wb,a2,"Agendamentos");
     const a3=X.utils.aoa_to_sheet([["Empresa","Cargas","Pallets","UN","CX","KG"]].concat(R.empresas.map(e=>[e.empresa,e.cargas,e.pallets,e.un,e.cx,e.kg])));
     a3["!cols"]=[{wch:30},{wch:8},{wch:9},{wch:9},{wch:9},{wch:9}];
     X.utils.book_append_sheet(wb,a3,"Por empresa");
+    const a4=X.utils.aoa_to_sheet([["Marca","Cargas","Pallets","UN","CX"]].concat(R.marcas.map(m=>[m.marca,m.cargas,m.pallets,m.un,m.cx])));
+    a4["!cols"]=[{wch:12},{wch:8},{wch:9},{wch:9},{wch:9}];
+    X.utils.book_append_sheet(wb,a4,"Por marca");
     const buf=X.write(wb,{bookType:"xlsx",type:"array"});
-    const name=`Agenda_Descarga_S${isoWeek(weekStart)}_${iso(weekStart)}.xlsx`;
+    const name=`Agenda_Descarga${marcaF!=="Todas"?"_"+marcaF:""}_S${isoWeek(weekStart)}_${iso(weekStart)}.xlsx`;
     const url=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
     const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),2000);toast("Planilha baixada")
   }
 
+  let marcaF="Todas";
+  try{const m=localStorage.getItem("agenda-marca");if(["Todas","Mart","Buba"].includes(m))marcaF=m}catch(e){}
+  function mk(x){return x.marca?`<span class="mk mk-${esc(x.marca)}">${esc(x.marca)}</span>`:'<span class="mk mk-none">sem marca</span>'}
+  function renderBrandTabs(){
+    const start=iso(weekStart),end=iso(addDays(weekStart,6)),wk=items.filter(it=>it.data>=start&&it.data<end);
+    $("#brandTabs").innerHTML=["Todas","Mart","Buba"].map(m=>`<button type="button" data-marca="${m}" aria-pressed="${m===marcaF}">${m}<b>${m==="Todas"?wk.length:wk.filter(x=>x.marca===m).length}</b></button>`).join("");
+  }
   let alertH=2;
   try{const h=Number(localStorage.getItem("agenda-alerta-h"));if([1,2,3,4,6].includes(h))alertH=h}catch(e){}
   function fmtMin(m){m=Math.round(Math.abs(m));const h=Math.floor(m/60),r=m%60;return h?`${h}h${r?pad(r):""}`:`${r} min`}
@@ -508,7 +535,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     return `<button type="button" class="card${done?" done":""}${u?" urg-"+u.k:""}" data-id="${esc(x.id)}">
       ${u?`<span class="eta ${u.k}">⏱ ${u.txt}</span>`:""}
       <span class="top"><span class="time">${esc(x.hora)}</span>${x.doca?`<span class="dock">${esc(x.doca)}</span>`:""}${x.exemplo?'<span class="tag">exemplo</span>':""}<span class="pill st-${esc(x.status)}">${esc(x.status)}</span></span>
-      <span class="company">${esc(x.empresa)}</span>
+      <span class="company">${mk(x)} ${esc(x.empresa)}</span>
       <span class="product">${esc(x.produto)}</span>
       ${qty.length?`<span class="qty">${qty.join("")}</span>`:""}
       ${meta?`<span class="meta">${meta}</span>`:""}
@@ -518,7 +545,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   }
 
   // Formulário
-  const F={data:"#fData",hora:"#fHora",doca:"#fDoca",status:"#fStatus",empresa:"#fEmpresa",transportadora:"#fTransp",placa:"#fPlaca",veiculo:"#fVeiculo",nf:"#fNF",produto:"#fProduto",qtd:"#fQtd",un:"#fUn",pallets:"#fPallets",palTipo:"#fPalTipo",obs:"#fObs"};
+  const F={marca:"#fMarca",data:"#fData",hora:"#fHora",doca:"#fDoca",status:"#fStatus",empresa:"#fEmpresa",transportadora:"#fTransp",placa:"#fPlaca",veiculo:"#fVeiculo",nf:"#fNF",produto:"#fProduto",qtd:"#fQtd",un:"#fUn",pallets:"#fPallets",palTipo:"#fPalTipo",obs:"#fObs"};
   function openForm(it,day){
     editingId=it?it.id:null;
     $("#dTitle").textContent=it?"Editar agendamento":"Novo agendamento";
@@ -540,7 +567,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   async function save(e){
     e.preventDefault();
     const v={};Object.entries(F).forEach(([k,s])=>v[k]=$(s).value.trim());
-    const miss=[["data","Data"],["hora","Horário"],["empresa","Empresa"],["produto","Produto"]].filter(([k])=>!v[k]).map(([,l])=>l);
+    const miss=[["marca","Marca"],["data","Data"],["hora","Horário"],["empresa","Empresa"],["produto","Produto"]].filter(([k])=>!v[k]).map(([,l])=>l);
     if(miss.length){$("#formMsg").textContent="Preencha: "+miss.join(", ");return}
     v.qtd=v.qtd===""?0:Number(v.qtd);v.pallets=v.pallets===""?0:Number(v.pallets);
     v.placa=v.placa.toUpperCase();
@@ -579,6 +606,7 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
     const c=e.target.closest("[data-id]");
     if(c&&!e.target.closest("#drawer")){const it=items.find(i=>i.id===c.dataset.id);if(it)openForm(it);return}
     const a=e.target.closest("[data-add]");if(a){openForm(null,a.dataset.add);return}
+    const mb=e.target.closest("[data-marca]");if(mb){marcaF=mb.dataset.marca;try{localStorage.setItem("agenda-marca",marcaF)}catch(_){}render();return}
     if(e.target.id==="goToday"){weekStart=mondayOf(new Date());render();return}
     if(e.target.id==="copyTxt"){copySummary(e.target);return}
     if(e.target.id==="dlXlsx"){downloadXlsx();return}
@@ -609,8 +637,8 @@ legend{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transfo
   // Primeiro quadro: vazio até o armazenamento responder
   render();
 
-  function fromRow(r){return {id:r.id,data:r.data,hora:String(r.hora||"").slice(0,5),doca:r.doca||"",status:r.status,empresa:r.empresa||"",transportadora:r.transportadora||"",placa:r.placa||"",veiculo:r.veiculo||"",nf:r.nf||"",produto:r.produto||"",qtd:Number(r.qtd)||0,un:r.un||"UN",pallets:Number(r.pallets)||0,palTipo:r.pal_tipo||"",obs:r.obs||"",exemplo:!!r.exemplo}}
-  function toRow(v){const n=x=>x===""?null:x;return {data:v.data,hora:v.hora,doca:n(v.doca),status:v.status||"Agendado",empresa:v.empresa,transportadora:n(v.transportadora),placa:n(v.placa),veiculo:n(v.veiculo),nf:n(v.nf),produto:v.produto,qtd:v.qtd,un:v.un||"UN",pallets:v.pallets,pal_tipo:n(v.palTipo),obs:n(v.obs),exemplo:!!v.exemplo}}
+  function fromRow(r){return {id:r.id,marca:r.marca||"",data:r.data,hora:String(r.hora||"").slice(0,5),doca:r.doca||"",status:r.status,empresa:r.empresa||"",transportadora:r.transportadora||"",placa:r.placa||"",veiculo:r.veiculo||"",nf:r.nf||"",produto:r.produto||"",qtd:Number(r.qtd)||0,un:r.un||"UN",pallets:Number(r.pallets)||0,palTipo:r.pal_tipo||"",obs:r.obs||"",exemplo:!!r.exemplo}}
+  function toRow(v){const n=x=>x===""?null:x;return {marca:n(v.marca),data:v.data,hora:v.hora,doca:n(v.doca),status:v.status||"Agendado",empresa:v.empresa,transportadora:n(v.transportadora),placa:n(v.placa),veiculo:n(v.veiculo),nf:n(v.nf),produto:v.produto,qtd:v.qtd,un:v.un||"UN",pallets:v.pallets,pal_tipo:n(v.palTipo),obs:n(v.obs),exemplo:!!v.exemplo}}
   let loading=null;
   async function load(){
     if(!sb)return;
